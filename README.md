@@ -1,4 +1,6 @@
 # Sofra
+<img width="1905" height="972" alt="image" src="https://github.com/user-attachments/assets/25064b50-0679-42b5-8e5c-45459c8bb7a8" />
+
 
 A bilingual (English/Arabic) food ordering platform with a customer-facing menu, cart, checkout, order tracking, and an admin dashboard for managing products and orders.
 
