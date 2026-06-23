@@ -6,34 +6,157 @@ A bilingual (English/Arabic) food ordering platform with a customer-facing menu,
 
 **Client** — Next.js 16, React 19, TanStack Query, Zustand, react-i18next, Tailwind CSS 4, TypeScript
 
-**Server** — Express, Mongoose, JWT, Zod validation, Multer (file uploads), TypeScript
+**Server** — Express, Mongoose, JWT, Zod validation, Multer (file uploads), Swagger, TypeScript
+
+## Architecture
+
+```
+┌──────────────┐       ┌───────────────────────────────────┐
+│   Browser    │──────▶│          Express Server            │
+│  (Next.js)   │       │         (http://localhost:3001)     │
+│ localhost:3000│       │                                   │
+│              │       │  ┌─────────┐  ┌─────────────────┐  │
+│  ┌────────┐  │       │  │ Auth    │  │ MongoDB/Mongoose│  │
+│  │React   │  │       │  │ JWT     │──│ (Users,Orders,  │  │
+│  │TanStack│  │       │  │ bcrypt  │  │  Products,Pay.) │  │
+│  │Query   │  │       │  ├─────────┤  └─────────────────┘  │
+│  │Zustand │  │       │  │Routes  │                         │
+│  │i18n    │  │       │  │ Zod    │  ┌─────────────────┐  │
+│  │Tailwind│  │       │  │ Multer │──│  /uploads/      │  │
+│  └────────┘  │       │  │Swagger │  │  (images)       │  │
+└──────────────┘       │  └─────────┘  └─────────────────┘  │
+                       └───────────────────────────────────┘
+```
 
 ## Project Structure
 
+### Client (`client/`)
+
 ```
-sofra/
-├── client/              # Next.js frontend
-│   ├── src/
-│   │   ├── app/         # Next.js App Router pages
-│   │   │   ├── (auth)/  # Login, Signup
-│   │   │   ├── (customer)/ # Menu, Cart, Checkout, Orders, Tracking
-│   │   │   └── admin/   # Dashboard, Products, Orders
-│   │   ├── components/  # Reusable UI components
-│   │   ├── hooks/       # TanStack Query hooks
-│   │   ├── lib/         # Utilities (image helper, etc.)
-│   │   ├── locales/     # i18n translations (en.json, ar.json)
-│   │   ├── services/    # Axios API clients
-│   │   ├── store/       # Zustand stores (auth, cart)
-│   │   └── types/       # TypeScript type definitions
-│   └── ...config files
-└── server/              # Express backend
-    ├── src/
-    │   ├── config/      # DB, upload config
-    │   ├── middleware/   # Auth, error handling
-    │   ├── modules/     # Feature modules (auth, orders, products, etc.)
-    │   └── utils/       # Shared utilities
-    ├── uploads/         # Product images
-    └── ...config files
+client/src/
+├── app/                          # Next.js App Router
+│   ├── (auth)/                   #   Public auth routes
+│   │   ├── login/page.tsx
+│   │   └── signup/page.tsx
+│   ├── (customer)/               #   Customer routes (auth-guarded)
+│   │   ├── cart/page.tsx
+│   │   ├── checkout/page.tsx
+│   │   ├── menu/page.tsx
+│   │   ├── orders/page.tsx
+│   │   ├── payment/page.tsx
+│   │   ├── tracking/[orderId]/page.tsx
+│   │   └── layout.tsx
+│   ├── admin/                    #   Admin routes (admin-guarded)
+│   │   ├── dashboard/page.tsx
+│   │   ├── orders/page.tsx
+│   │   ├── products/page.tsx
+│   │   └── layout.tsx
+│   ├── layout.tsx                #   Root layout (QueryProvider, I18nProvider)
+│   ├── page.tsx                  #   Landing page
+│   └── not-found.tsx
+├── components/
+│   ├── admin/                    #   Admin panel components
+│   │   ├── DashboardStats.tsx
+│   │   ├── OrdersTable.tsx
+│   │   ├── ProductModal.tsx
+│   │   ├── ProductsTable.tsx
+│   │   └── RecentOrders.tsx
+│   ├── auth/                     #   Auth guard wrapper
+│   │   └── AuthGuard.tsx
+│   ├── cart/                     #   Cart UI components
+│   ├── checkout/                 #   Checkout form components
+│   ├── common/                   #   Shared UI (Button, Input, Modal, Loader...)
+│   ├── layout/                   #   Navbar, Footer, Sidebar, LanguageSwitcher
+│   ├── menu/                     #   Menu catalog components
+│   ├── tracking/                 #   Order tracking components
+│   ├── I18nProvider.tsx          #   i18n provider
+│   └── QueryProvider.tsx         #   TanStack Query provider
+├── hooks/                        # TanStack Query hooks
+│   ├── useAuth.ts                #   useLogin, useSignup, useLogout
+│   ├── useCart.ts
+│   ├── useDashboard.ts           #   useDashboardStats
+│   ├── useOrders.ts              #   useOrders, useOrderDetail, useCreateOrder...
+│   ├── usePayment.ts             #   useCreatePayment
+│   └── useProducts.ts            #   useProducts, useProduct, useCreateProduct...
+├── lib/                          # Utilities
+│   ├── axios.ts                  #   Axios instance with JWT interceptor
+│   ├── constants.ts
+│   ├── i18n.ts                   #   i18next config
+│   ├── image.ts                  #   getImageUrl() helper
+│   └── utils.ts
+├── locales/                      # i18n translations
+│   ├── en.json
+│   └── ar.json
+├── services/                     # API service layers (called by hooks)
+│   ├── auth.service.ts
+│   ├── dashboard.service.ts
+│   ├── order.service.ts
+│   ├── payment.service.ts
+│   └── product.service.ts
+├── store/                        # Zustand stores
+│   ├── auth.store.ts
+│   ├── cart.store.ts
+│   └── order.store.ts
+└── types/                        # TypeScript type definitions
+    ├── auth.ts
+    ├── order.ts
+    └── product.ts
+```
+
+### Server (`server/`)
+
+```
+server/src/
+├── config/                       # Configuration
+│   ├── cors.ts                   #   CORS options
+│   ├── db.ts                     #   MongoDB connection
+│   ├── env.ts                    #   Environment variables
+│   ├── swagger.ts                #   Swagger/OpenAPI spec
+│   └── upload.ts                 #   Multer file upload config
+├── middleware/                    # Express middleware
+│   ├── auth.middleware.ts        #   JWT authentication
+│   ├── error.middleware.ts       #   Global error handler
+│   ├── role.middleware.ts        #   Role-based authorization
+│   └── validate.middleware.ts    #   Zod validation
+├── modules/                      # Feature modules
+│   ├── auth/                     #   Authentication
+│   │   ├── auth.controller.ts
+│   │   ├── auth.routes.ts
+│   │   ├── auth.service.ts
+│   │   ├── auth.validation.ts
+│   │   └── user.model.ts
+│   ├── users/                    #   User profile
+│   │   ├── user.controller.ts
+│   │   ├── user.routes.ts
+│   │   └── user.service.ts
+│   ├── products/                 #   Product CRUD
+│   │   ├── product.controller.ts
+│   │   ├── product.model.ts
+│   │   ├── product.routes.ts
+│   │   ├── product.service.ts
+│   │   └── product.validation.ts
+│   ├── orders/                   #   Order management
+│   │   ├── order.controller.ts
+│   │   ├── order.model.ts
+│   │   ├── order.routes.ts
+│   │   ├── order.service.ts
+│   │   └── order.validation.ts
+│   ├── payments/                 #   Payment processing
+│   │   ├── payment.controller.ts
+│   │   ├── payment.model.ts
+│   │   ├── payment.routes.ts
+│   │   └── payment.service.ts
+│   └── dashboard/                #   Admin dashboard stats
+│       ├── dashboard.controller.ts
+│       ├── dashboard.routes.ts
+│       └── dashboard.service.ts
+├── utils/                        # Shared utilities
+│   ├── ApiError.ts               #   Custom error class
+│   ├── ApiResponse.ts            #   Response wrapper
+│   └── logger.ts                 #   Simple logger
+├── app.ts                        # Express app setup + Swagger UI
+├── server.ts                     # Entry point
+└── seed.ts                       # Database seeder (admin account)
 ```
 
 ## Prerequisites
@@ -63,6 +186,8 @@ npm run dev             # Starts on http://localhost:3000
 
 Open [http://localhost:3000](http://localhost:3000) in your browser.
 
+Once the server is running, view the interactive API documentation at [http://localhost:3001/api-docs](http://localhost:3001/api-docs).
+
 ## Environment Variables (server/.env)
 
 | Variable        | Description                    | Default                          |
@@ -76,12 +201,13 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ### Server
 
-| Script        | Description                        |
-|---------------|------------------------------------|
-| `npm run dev` | Start dev server with hot reload   |
-| `npm run build` | Compile TypeScript              |
-| `npm start`   | Run compiled production server     |
-| `npm run seed` | Seed database with sample data   |
+| Script          | Description                            |
+|-----------------|----------------------------------------|
+| `npm run dev`   | Start dev server with hot reload       |
+| `npm run build` | Compile TypeScript                     |
+| `npm start`     | Run compiled production server         |
+| `npm run seed`  | Seed database with sample data         |
+| Swagger UI      | Visit `http://localhost:3001/api-docs` |
 
 ### Client
 
@@ -102,6 +228,8 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 - **Admin Panel** — Dashboard stats, product CRUD (with image upload), order management
 - **i18n** — Full English/Arabic support with RTL layout switching
 - **Responsive** — Works on desktop and mobile
+
+Interactive API documentation available at [http://localhost:3001/api-docs](http://localhost:3001/api-docs) (requires server running).
 
 ## API Overview
 
