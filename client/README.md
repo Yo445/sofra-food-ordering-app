@@ -1,36 +1,27 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Screens
+## Auth Forms
+<img width="1902" height="965" alt="image" src="https://github.com/user-attachments/assets/69c63027-4d8c-4b9c-8a3f-e75ffb98e9fa" />
+<img width="1915" height="967" alt="image" src="https://github.com/user-attachments/assets/de89594a-afe0-43bb-91b0-12002f9cc80e" />
 
-## Getting Started
+## Customer Dashboard
+<img width="1906" height="972" alt="image" src="https://github.com/user-attachments/assets/193115b3-ff21-4136-9295-16eea763ee7d" />
+<img width="1897" height="972" alt="image" src="https://github.com/user-attachments/assets/d2a5fa09-fb2c-4c29-b57f-6ef919bef671" />
+<img width="1912" height="972" alt="image" src="https://github.com/user-attachments/assets/4fa698ec-a9ce-48ac-9a7b-3584b95c1053" />
+<img width="1905" height="971" alt="image" src="https://github.com/user-attachments/assets/1d3bc466-fef9-43fe-96b8-f464227c3c25" />
+<img width="1907" height="975" alt="image" src="https://github.com/user-attachments/assets/866daf56-d33c-4f08-9e07-67c587d9f9d5" />
+<img width="1907" height="972" alt="image" src="https://github.com/user-attachments/assets/faefde75-26e8-4071-98be-650343bba4ed" />
 
-First, run the development server:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Admin Dashboard
+<img width="1905" height="971" alt="image" src="https://github.com/user-attachments/assets/cb521d6d-f7a2-4a1e-90c1-22554570609e" />
+<img width="1907" height="977" alt="image" src="https://github.com/user-attachments/assets/c56e03fb-f284-44a0-94d2-68ed1663f39b" />
+<img width="1902" height="975" alt="image" src="https://github.com/user-attachments/assets/5658a95f-1e0a-4d78-a201-36bbf79211ec" />
+<img width="1902" height="975" alt="image" src="https://github.com/user-attachments/assets/574abff5-b6ff-4e9a-a85f-f0e32dc3b0d0" />
+<img width="1907" height="975" alt="image" src="https://github.com/user-attachments/assets/e32a0264-d228-40a0-aeb2-787adcc137c9" />
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## Learn More
 
-To learn more about Next.js, take a look at the following resources:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
