@@ -21,7 +21,8 @@ export const orderService = {
   async getById(id: string, userId?: string, role?: string) {
     const order = await Order.findById(id).populate("userId", "name email");
     if (!order) throw new ApiError(404, "Order not found");
-    if (role !== "admin" && order.userId.toString() !== userId) {
+    const ownerId = typeof order.userId === "object" ? order.userId._id.toString() : order.userId.toString();
+    if (role !== "admin" && ownerId !== userId) {
       throw new ApiError(403, "Not authorized to view this order");
     }
     return order;

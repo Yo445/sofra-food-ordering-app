@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import path from "path";
+import { fileURLToPath } from "url";
 import { corsOptions } from "./config/cors";
 import { errorHandler } from "./middleware/error.middleware";
 import authRoutes from "./modules/auth/auth.routes";
@@ -14,6 +15,7 @@ const app = express();
 
 app.use(cors(corsOptions));
 app.use(express.json());
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
 app.use("/api/auth", authRoutes);
